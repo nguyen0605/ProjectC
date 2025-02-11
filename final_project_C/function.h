@@ -40,10 +40,11 @@ void deleteCategory();
 void editCategory();
 
 //tim kiem danh muc
-void searchCategory();
+void searchCategoryByName();
 
-
+//sap xep danh muc 
 void sortCategories();
+
 void sortProducts();
 void filterProducts();
 void printMainMenu();
