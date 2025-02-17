@@ -46,10 +46,19 @@ void searchCategoryByName();
 void sortCategories();
 
 void sortProducts();
+
+
 void filterProducts();
+void filterByCategory(); 
+void filterByPrice(); 
+
 void printMainMenu();
 void printProductMenu();
 void printCategoryMenu();
-void adminLogin();
+
+int loginAdmin();
+void saveAdminToFile();
+void loadAdminFromFile();
+char getPasswordInput();
 
 

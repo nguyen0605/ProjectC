@@ -389,7 +389,7 @@ void printProductMenu(){
             case 4: deleteProduct(); break;
             case 5: searchProduct(); break;
             case 6: sortProducts(); break;
-            case 7: printf("Filtering products...\n"); break;
+            case 7: filterProducts(); break;
             case 8: system("cls"); return;
             default: printf("Invalid choice! Please try again.\n");
         }
@@ -764,4 +764,191 @@ void sortProducts(){
     system("cls");
 }
 
+//sap xep danh sach san pham
+void filterProducts() {
+    system("cls");
+    int choice;
+    do {
+        printf("\n========== FILTER PRODUCTS ==========\n");
+        printf("1. Filter by Category\n");
+        printf("2. Filter by Price Range\n");
+        printf("3. Back to Product Menu\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        getchar();
 
+        switch(choice) {
+            case 1: filterByCategory(); break;
+            case 2: filterByPrice(); break;
+            case 3: system("cls"); return;
+            default: printf("Invalid choice! Please try again.\n");
+        }
+    } while (choice != 3);
+}
+
+void filterByCategory() {
+	system("cls");
+    char categoryId[10];
+    int found = 0, hasProducts = 0;
+    
+    fflush(stdin);
+    printf("Enter category ID: ");
+    fgets(categoryId, sizeof(categoryId), stdin);
+    trimNewline(categoryId);
+
+    for(i = 0; i < category_count; i++) {
+        if(strcmp(categoryId, categories[i].CategoryId) == 0) {
+            found = 1;
+            break;
+        }
+    }
+
+    if(!found) {
+        printf("Category ID does not exist!\n");
+        return;
+    }
+
+    printf("\n                  List of products                   \n");
+    printf("+------+----------------+--------+--------+-----------+\n");
+    printf("|  ID  |      Name      |  Price |Quantity|Category ID|\n");
+    printf("+------+----------------+--------+--------+-----------+\n");
+
+    for(i = 0; i < product_count; i++) {
+        if(strcmp(products[i].categoryID, categoryId) == 0) {
+            printf("|%-6s|%-16s|%-8d|%-8d|%-11s|\n",
+                products[i].productID, products[i].productName, 
+                products[i].price, products[i].quantity, 
+                products[i].categoryID);
+            hasProducts = 1;
+        }
+    }
+
+    if(!hasProducts) {
+        printf("No products found in this category!\n");
+    } else {
+        printf("+------+----------------+--------+--------+-----------+\n");
+    }
+}
+
+void filterByPrice() {
+	system("cls");
+    int startPrice, endPrice;
+    int hasProducts = 0;
+    
+    printf("Enter start price: ");
+    scanf("%d", &startPrice);
+    printf("Enter end price: ");
+    scanf("%d", &endPrice);
+    getchar();
+
+    if(startPrice < 0 || endPrice < 0 || startPrice > endPrice) {
+        printf("Invalid price range!\n");
+        return;
+    }
+
+    printf("\n                  List of products                   \n");
+    printf("+------+----------------+--------+--------+-----------+\n");
+    printf("|  ID  |      Name      |  Price |Quantity|Category ID|\n");
+    printf("+------+----------------+--------+--------+-----------+\n");
+
+    for(i = 0; i < product_count; i++) {
+        if(products[i].price >= startPrice && products[i].price <= endPrice) {
+            printf("|%-6s|%-16s|%-8d|%-8d|%-11s|\n",
+                products[i].productID, products[i].productName, 
+                products[i].price, products[i].quantity, 
+                products[i].categoryID);
+            hasProducts = 1;
+        }
+    }
+
+    if(!hasProducts) {
+        printf("No products found in this price range!\n");
+    } else {
+        printf("+------+----------------+--------+--------+-----------+\n");
+    }
+}
+
+//XAC THUC ADMIN 
+void saveAdminToFile() {
+    FILE *f = fopen(ADMIN_FILE, "w");
+    if (!f) {
+        printf("Error saving admin information!\n");
+        return;
+    }
+    fprintf(f, "%s\n%s\n", admin.username, admin.password);
+    fclose(f);
+}
+
+void loadAdminFromFile() {
+    FILE *f = fopen(ADMIN_FILE, "r");
+    
+    if (!f) {
+        strcpy(admin.username, "admin");//tai khoan mac dinh
+        strcpy(admin.password, "admin123");
+        saveAdminToFile();
+        return;
+    }
+    
+    if (fgets(admin.username, MAX_USERNAME, f)) {
+        admin.username[strcspn(admin.username, "\n")] = 0; 
+    }
+    if (fgets(admin.password, MAX_PASSWORD, f)) {
+        admin.password[strcspn(admin.password, "\n")] = 0; 
+    }
+    
+    fclose(f);
+}
+
+void getPasswordInput() { 
+    char ch;
+    i = 0;  
+    
+    while (1) {
+        ch = getch();
+        
+        if (ch == 13) {
+            password[i] = '\0';
+            printf("\n");
+            break;
+        } else if (ch == 8) { 
+            if (i > 0) {
+                i--;
+                printf("\b \b");
+            }
+        } else if (i < MAX_PASSWORD - 1) {
+            password[i++] = ch;
+            printf("*");
+        }
+    }
+}
+
+int loginAdmin() {
+    char inputUsername[MAX_USERNAME];
+   
+    loadAdminFromFile();
+
+    while (1) {
+        system("cls");
+        printf("\n=================================\n");
+        printf("           ADMIN LOGIN           \n");
+        printf("=================================\n\n");
+        
+        printf("Username: ");
+        fflush(stdin);
+        fgets(inputUsername, sizeof(inputUsername), stdin);
+        trimNewline(inputUsername); 
+        
+        printf("Password: ");
+        getPasswordInput();
+
+        if (strcmp(inputUsername, admin.username) == 0 && 
+            strcmp(password, admin.password) == 0) {
+            printf("\nSign in successfully\n");
+            return 1;
+        } else {
+            printf("\nWrong name or wrong password, please enter again!\n");
+            sleep(3);
+        }
+    }
+    return 0;
+}
