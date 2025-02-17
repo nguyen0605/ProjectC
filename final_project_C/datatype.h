@@ -1,4 +1,8 @@
 // noi import cac thu vien, khai bao cac struct
+#include <ctype.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define MAX_PRODUCTS 100
 #define MAX_CATEGORIES 50
@@ -15,14 +19,14 @@ typedef struct{
 }Date;
 
 typedef struct{
-	char CategoryId[10];
-	char CategoryName[10];
+	char CategoryId[5];
+	char CategoryName[15];
 }Category;
 
 typedef struct{
-	char productID[10];
-	char categoryID[10];
-	char productName[10];
+	char productID[5];
+	char categoryID[5];
+	char productName[15];
 	int quantity, price;
 }Product;
 
